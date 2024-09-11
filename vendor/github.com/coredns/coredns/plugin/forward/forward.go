@@ -112,10 +112,12 @@ func (f *Forward) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg
 			}
 			// All upstream proxies are dead, assume healthcheck is completely broken and randomly
 			// select an upstream to connect to.
-			r := new(random)
-			proxy = r.List(f.proxies)[0]
+			// r := new(random)
+			// proxy = r.List(f.proxies)[0]
 
 			HealthcheckBrokenCount.Add(1)
+			// All upstream proxies are dead
+			return dns.RcodeServerFailure, upstreamErr
 		}
 
 		if span != nil {
