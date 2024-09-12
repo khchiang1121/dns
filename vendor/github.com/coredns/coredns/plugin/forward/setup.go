@@ -281,6 +281,11 @@ func parseBlock(c *caddy.Controller, f *Forward) error {
 		}
 		f.ErrLimitExceeded = errors.New("concurrent queries exceeded maximum " + c.Val())
 		f.maxConcurrent = int64(n)
+	case "skip_forward":
+		if !c.NextArg() {
+			return c.ArgErr()
+		}
+		f.opts.skipForward = true
 
 	default:
 		return c.Errf("unknown property '%s'", c.Val())

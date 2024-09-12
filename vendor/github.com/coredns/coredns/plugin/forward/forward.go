@@ -56,7 +56,7 @@ type Forward struct {
 
 // New returns a new Forward.
 func New() *Forward {
-	f := &Forward{maxfails: 2, tlsConfig: new(tls.Config), expire: defaultExpire, p: new(random), from: ".", hcInterval: hcInterval, opts: options{forceTCP: false, preferUDP: false, hcRecursionDesired: true, hcDomain: "."}}
+	f := &Forward{maxfails: 2, tlsConfig: new(tls.Config), expire: defaultExpire, p: new(random), from: ".", hcInterval: hcInterval, opts: options{forceTCP: false, preferUDP: false, hcRecursionDesired: true, hcDomain: ".", skipForward: false}}
 	return f
 }
 
@@ -105,6 +105,7 @@ func (f *Forward) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg
 
 		proxy := list[i]
 		i++
+		opts := f.opts
 		if proxy.Down(f.maxfails) {
 			fails++
 			if fails < len(f.proxies) {
@@ -112,12 +113,12 @@ func (f *Forward) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg
 			}
 			// All upstream proxies are dead, assume healthcheck is completely broken and randomly
 			// select an upstream to connect to.
-			// r := new(random)
-			// proxy = r.List(f.proxies)[0]
-
 			HealthcheckBrokenCount.Add(1)
-			// All upstream proxies are dead
-			return dns.RcodeServerFailure, upstreamErr
+			if opts.skipForward {
+				return dns.RcodeServerFailure, ErrNoHealthy
+			}
+			r := new(random)
+			proxy = r.List(f.proxies)[0]
 		}
 
 		if span != nil {
@@ -134,7 +135,6 @@ func (f *Forward) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg
 			ret *dns.Msg
 			err error
 		)
-		opts := f.opts
 		for {
 			ret, err = proxy.Connect(ctx, state, opts)
 			if err == ErrCachedClosed { // Remote side closed conn, can only happen with TCP.
@@ -236,6 +236,7 @@ type options struct {
 	preferUDP          bool
 	hcRecursionDesired bool
 	hcDomain           string
+	skipForward		   bool
 }
 
 var defaultTimeout = 5 * time.Second

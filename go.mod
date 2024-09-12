@@ -144,5 +144,6 @@ replace (
 	k8s.io/sample-apiserver => k8s.io/sample-apiserver v0.24.7
 )
 
-replace github.com/coredns/coredns v1.10.0 => github.com/khchiang1121/coredns v1.10.2
+replace github.com/coredns/coredns v1.10.0 => github.com/khchiang1121/coredns v1.10.5
+
 // replace k8s.io/dns v1.23.1 => github.com/khchiang1121/dns v1.23.2
