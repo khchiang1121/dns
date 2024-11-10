@@ -36,7 +36,7 @@ CONTAINER_BINARIES := \
 # List of images to build (contained in images/)
 IMAGES := dnsmasq
 # Registry to push to.
-REGISTRY ?= gcr.io/k8s-staging-dns
+REGISTRY ?= khchiang1121
 # Default architecture to build for.
 ARCH ?= amd64
 # Image to use for building.
