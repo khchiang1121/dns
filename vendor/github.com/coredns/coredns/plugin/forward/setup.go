@@ -47,6 +47,8 @@ func setup(c *caddy.Controller) error {
 		}
 
 		c.OnStartup(func() error {
+			f.viewMetricLabel = dnsserver.GetConfig(c).ViewName
+			f.zonesMetricLabel = dnsserver.GetConfig(c).Zone
 			return f.OnStartup()
 		})
 		c.OnStartup(func() error {
@@ -160,6 +162,8 @@ func parseStanza(c *caddy.Controller) (*Forward, error) {
 			f.proxies[i].health.SetTCPTransport()
 		}
 		f.proxies[i].health.SetDomain(f.opts.hcDomain)
+		f.proxies[i].viewMetricLabel = dnsserver.GetConfig(c).ViewName
+		f.proxies[i].zonesMetricLabel = dnsserver.GetConfig(c).Zone
 	}
 
 	return f, nil

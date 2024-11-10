@@ -40,6 +40,7 @@ cache [TTL] [ZONES...] {
     serve_stale [DURATION] [REFRESH_MODE]
     servfail DURATION
     disable success|denial [ZONES...]
+    verify_timeout DURATION
 }
 ~~~
 
@@ -70,6 +71,7 @@ cache [TTL] [ZONES...] {
   greater than 5 minutes.
 * `disable`  disable the success or denial cache for the listed **ZONES**.  If no **ZONES** are given, the specified
   cache will be disabled for all zones.
+* `verify_timeout` specifies the maximum **DURATION** to wait for the cache to be refreshed before serving stale data. If the refresh operation does not complete within **DURATION**, stale data will be served, and the refresh process will continue. This setting only takes effect when serve_stale is set to `verify` mode. **DURATION** should be greater than 0."
 
 ## Capacity and Eviction
 
@@ -93,6 +95,7 @@ If monitoring is enabled (via the *prometheus* plugin) then the following metric
 * `coredns_cache_drops_total{server, zones, view}` - Counter of responses excluded from the cache due to request/response question name mismatch.
 * `coredns_cache_served_stale_total{server, zones, view}` - Counter of requests served from stale cache entries.
 * `coredns_cache_evictions_total{server, type, zones, view}` - Counter of cache evictions.
+* `coredns_cache_timeout_refresh_total{server, zones, view}` - Counter of requests that timed out while waiting for cache to be refreshed in serve stale verify mode.
 
 Cache types are either "denial" or "success". `Server` is the server handling the request, see the
 prometheus plugin for documentation.

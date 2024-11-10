@@ -240,6 +240,19 @@ func cacheParse(c *caddy.Controller) (*Cache, error) {
 				default:
 					return nil, fmt.Errorf("cache type for disable must be %q or %q", Success, Denial)
 				}
+			case "verify_timeout":
+				args := c.RemainingArgs()
+				if len(args) != 1 {
+					return nil, c.ArgErr()
+				}
+				timeout, err := time.ParseDuration(args[0])
+				if err != nil {
+					return nil, err
+				}
+				if timeout < 0 {
+					return nil, errors.New("invalid negative duration for verify_timeout")
+				}
+				ca.verifyTimeout = timeout
 			default:
 				return nil, c.ArgErr()
 			}

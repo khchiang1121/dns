@@ -142,9 +142,9 @@ func (p *Proxy) Connect(ctx context.Context, state request.Request, opts options
 		rc = strconv.Itoa(ret.Rcode)
 	}
 
-	RequestCount.WithLabelValues(p.addr).Add(1)
-	RcodeCount.WithLabelValues(rc, p.addr).Add(1)
-	RequestDuration.WithLabelValues(p.addr, rc).Observe(time.Since(start).Seconds())
+	RequestCount.WithLabelValues(p.server, p.zonesMetricLabel, p.viewMetricLabel, p.addr).Add(1)
+	RcodeCount.WithLabelValues(p.server, p.zonesMetricLabel, p.viewMetricLabel, rc, p.addr).Add(1)
+	RequestDuration.WithLabelValues(p.server, p.zonesMetricLabel, p.viewMetricLabel, p.addr, rc).Observe(time.Since(start).Seconds())
 
 	return ret, nil
 }

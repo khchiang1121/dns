@@ -64,4 +64,11 @@ var (
 		Name:      "evictions_total",
 		Help:      "The count of cache evictions.",
 	}, []string{"server", "type", "zones", "view"})
+	// timeoutRequests is the number of requests that timed out while waiting for cache to be refreshed in serve stale verify mode.
+	timeoutRefreshes = promauto.NewCounterVec(prometheus.CounterOpts{
+		Namespace: plugin.Namespace,
+		Subsystem: "cache",
+		Name:      "timeout_refresh_total",
+		Help:      "The number of requests that timed out while waiting for cache to be refreshed in serve stale verify mode.",
+	}, []string{"server", "zones", "view"})
 )

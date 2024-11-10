@@ -48,9 +48,37 @@ func (c *Cache) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) 
 		if c.verifyStale {
 			crr := &ResponseWriter{ResponseWriter: w, Cache: c, state: state, server: server, do: do}
 			cw := newVerifyStaleResponseWriter(crr)
-			ret, err := c.doRefresh(ctx, state, cw)
-			if cw.refreshed {
-				return ret, err
+
+			if c.verifyTimeout > 0 {
+				timeoutCtx, cancel := context.WithTimeout(ctx, c.verifyTimeout)
+				defer cancel()
+
+				retChan := make(chan struct {
+					ret int
+					err error
+				}, 1)
+
+				go func() {
+					ret, err := c.doRefresh(ctx, state, cw)
+					retChan <- struct {
+						ret int
+						err error
+					}{ret, err}
+				}()
+
+				select {
+				case result := <-retChan:
+					if cw.refreshed {
+						return result.ret, result.err
+					}
+				case <-timeoutCtx.Done():
+					timeoutRefreshes.WithLabelValues(server, c.zonesMetricLabel, c.viewMetricLabel).Inc()
+				}
+			} else {
+				ret, err := c.doRefresh(ctx, state, cw)
+				if cw.refreshed {
+					return ret, err
+				}
 			}
 		}
 

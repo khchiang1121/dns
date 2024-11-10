@@ -19,6 +19,10 @@ type Proxy struct {
 	// health checking
 	probe  *up.Probe
 	health HealthChecker
+
+	server string
+	zonesMetricLabel string
+	viewMetricLabel string
 }
 
 // NewProxy returns a new proxy.

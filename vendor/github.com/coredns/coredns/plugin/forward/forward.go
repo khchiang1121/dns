@@ -15,6 +15,7 @@ import (
 	"github.com/coredns/coredns/plugin/debug"
 	"github.com/coredns/coredns/plugin/dnstap"
 	"github.com/coredns/coredns/plugin/metadata"
+	"github.com/coredns/coredns/plugin/metrics"
 	clog "github.com/coredns/coredns/plugin/pkg/log"
 	"github.com/coredns/coredns/request"
 
@@ -50,6 +51,9 @@ type Forward struct {
 	ErrLimitExceeded error
 
 	tapPlugin *dnstap.Dnstap // when the dnstap plugin is loaded, we use to this to send messages out.
+	
+	zonesMetricLabel string
+	viewMetricLabel  string
 
 	Next plugin.Handler
 }
@@ -74,6 +78,8 @@ func (f *Forward) Name() string { return "forward" }
 
 // ServeDNS implements plugin.Handler.
 func (f *Forward) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
+	server := metrics.WithServer(ctx)
+
 	state := request.Request{W: w, Req: r}
 	if !f.match(state) {
 		return plugin.NextOrFailure(f.Name(), f.Next, ctx, w, r)
@@ -83,7 +89,7 @@ func (f *Forward) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg
 		count := atomic.AddInt64(&(f.concurrent), 1)
 		defer atomic.AddInt64(&(f.concurrent), -1)
 		if count > f.maxConcurrent {
-			MaxConcurrentRejectCount.Add(1)
+			MaxConcurrentRejectCount.WithLabelValues(server, f.zonesMetricLabel, f.viewMetricLabel).Inc()
 			return dns.RcodeRefused, f.ErrLimitExceeded
 		}
 	}
@@ -104,6 +110,7 @@ func (f *Forward) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg
 		}
 
 		proxy := list[i]
+		proxy.server = server
 		i++
 		opts := f.opts
 		if proxy.Down(f.maxfails) {
@@ -111,12 +118,15 @@ func (f *Forward) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg
 			if fails < len(f.proxies) {
 				continue
 			}
-			// All upstream proxies are dead, assume healthcheck is completely broken and randomly
-			// select an upstream to connect to.
-			HealthcheckBrokenCount.Add(1)
+			// All upstream proxies are dead
 			if opts.skipForward {
+				// If skipForward is set, do not attempt to randomly select an upstream,
+				// and return a server failure response with an error indicating no healthy upstream.
+				HealthcheckBrokenSkipForwardCount.WithLabelValues(server, f.zonesMetricLabel, f.viewMetricLabel).Inc()
 				return dns.RcodeServerFailure, ErrNoHealthy
 			}
+			// Assume healthcheck is completely broken and randomly select an upstream to connect to.
+			HealthcheckBrokenCount.WithLabelValues(server, f.zonesMetricLabel, f.viewMetricLabel).Inc()
 			r := new(random)
 			proxy = r.List(f.proxies)[0]
 		}
@@ -236,7 +246,7 @@ type options struct {
 	preferUDP          bool
 	hcRecursionDesired bool
 	hcDomain           string
-	skipForward		   bool
+	skipForward        bool
 }
 
 var defaultTimeout = 5 * time.Second

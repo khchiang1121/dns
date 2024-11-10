@@ -41,8 +41,9 @@ type Cache struct {
 	percentage int
 
 	// Stale serve
-	staleUpTo   time.Duration
-	verifyStale bool
+	staleUpTo     time.Duration
+	verifyStale   bool
+	verifyTimeout time.Duration
 
 	// Positive/negative zone exceptions
 	pexcept []string

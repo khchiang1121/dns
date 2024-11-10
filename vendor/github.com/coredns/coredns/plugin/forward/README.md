@@ -95,6 +95,7 @@ forward FROM TO... {
   response does not count as a health failure. When choosing a value for **MAX**, pick a number
   at least greater than the expected *upstream query rate* * *latency* of the upstream servers.
   As an upper bound for **MAX**, consider that each concurrent query will use about 2kb of memory.
+* `skip_forward` when set, do not randomly select an upstream if all are marked as down. Default is unset.
 
 Also note the TLS config is "global" for the whole forwarding proxy if you need a different
 `tls-name` for different upstreams you're out of luck.
@@ -115,14 +116,16 @@ plugin is also enabled:
 
 If monitoring is enabled (via the *prometheus* plugin) then the following metric are exported:
 
-* `coredns_forward_requests_total{to}` - query count per upstream.
-* `coredns_forward_responses_total{to}` - Counter of responses received per upstream.
-* `coredns_forward_request_duration_seconds{to, rcode, type}` - duration per upstream, RCODE, type
-* `coredns_forward_responses_total{to, rcode}` - count of RCODEs per upstream.
-* `coredns_forward_healthcheck_failures_total{to}` - number of failed health checks per upstream.
-* `coredns_forward_healthcheck_broken_total{}` - counter of when all upstreams are unhealthy,
+* `coredns_forward_requests_total{server, zones, view, to}` - query count per upstream.
+* `coredns_forward_request_duration_seconds{server, zones, view, to, rcode}` - duration per upstream, RCODE, type
+* `coredns_forward_responses_total{server, zones, view,  rcode, to}` - count of RCODEs per upstream.
+* `coredns_forward_healthcheck_total{server, zones, view, to}` - number of health checks per upstream.
+* `coredns_forward_healthcheck_failures_total{server, zones, view, to}` - number of failed health checks per upstream.
+* `coredns_forward_healthcheck_broken_total{server, zones, view}` - counter of when all upstreams are unhealthy,
   and we are randomly (this always uses the `random` policy) spraying to an upstream.
-* `coredns_forward_max_concurrent_rejects_total{}` - counter of the number of queries rejected because the
+* `coredns_forward_healthcheck_broken_skip_forward_total{server, zones, view}` - counter of requests not forwarded 
+  due to skipForward being enabled when all upstreams are unhealthy.
+* `coredns_forward_max_concurrent_rejects_total{server, zones, view}` - counter of the number of queries rejected because the
   number of concurrent queries were at maximum.
 * `coredns_forward_conn_cache_hits_total{to, proto}` - counter of connection cache hits per upstream and protocol.
 * `coredns_forward_conn_cache_misses_total{to, proto}` - counter of connection cache misses per upstream and protocol.

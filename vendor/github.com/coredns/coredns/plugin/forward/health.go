@@ -78,8 +78,9 @@ func (h *dnsHc) SetTCPTransport() {
 // Check is used as the up.Func in the up.Probe.
 func (h *dnsHc) Check(p *Proxy) error {
 	err := h.send(p.addr)
+	HealthcheckCount.WithLabelValues(p.server, p.zonesMetricLabel, p.viewMetricLabel, p.addr).Add(1)
 	if err != nil {
-		HealthcheckFailureCount.WithLabelValues(p.addr).Add(1)
+		HealthcheckFailureCount.WithLabelValues(p.server, p.zonesMetricLabel, p.viewMetricLabel, p.addr).Add(1)
 		atomic.AddUint32(&p.fails, 1)
 		return err
 	}

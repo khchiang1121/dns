@@ -35,7 +35,7 @@ github.com/cespare/xxhash/v2
 ## explicit; go 1.13
 github.com/coredns/caddy
 github.com/coredns/caddy/caddyfile
-# github.com/coredns/coredns v1.10.0 => github.com/khchiang1121/coredns v1.10.6
+# github.com/coredns/coredns v1.10.0 => github.com/khchiang1121/coredns v1.10.7
 ## explicit; go 1.17
 github.com/coredns/coredns/core/dnsserver
 github.com/coredns/coredns/coremain
