@@ -14,7 +14,7 @@ var (
 		Subsystem: "forward",
 		Name:      "requests_total",
 		Help:      "Counter of requests made per upstream.",
-	}, []string{"server", "zones", "view", "to"})
+	}, []string{"server", "zones", "view", "to", "type"})
 	RcodeCount = promauto.NewCounterVec(prometheus.CounterOpts{
 		Namespace: plugin.Namespace,
 		Subsystem: "forward",
@@ -27,7 +27,7 @@ var (
 		Name:      "request_duration_seconds",
 		Buckets:   plugin.TimeBuckets,
 		Help:      "Histogram of the time each request took.",
-	}, []string{"server", "zones", "view", "to", "rcode"})
+	}, []string{"server", "zones", "view", "to", "rcode", "type"})
 	HealthcheckCount = promauto.NewCounterVec(prometheus.CounterOpts{
 		Namespace: plugin.Namespace,
 		Subsystem: "forward",

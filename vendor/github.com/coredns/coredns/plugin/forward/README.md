@@ -116,8 +116,8 @@ plugin is also enabled:
 
 If monitoring is enabled (via the *prometheus* plugin) then the following metric are exported:
 
-* `coredns_forward_requests_total{server, zones, view, to}` - query count per upstream.
-* `coredns_forward_request_duration_seconds{server, zones, view, to, rcode}` - duration per upstream, RCODE, type
+* `coredns_forward_requests_total{server, zones, view, to, type}` - query count per upstream.
+* `coredns_forward_request_duration_seconds{server, zones, view, to, rcode, type}` - duration per upstream, RCODE, type
 * `coredns_forward_responses_total{server, zones, view,  rcode, to}` - count of RCODEs per upstream.
 * `coredns_forward_healthcheck_total{server, zones, view, to}` - number of health checks per upstream.
 * `coredns_forward_healthcheck_failures_total{server, zones, view, to}` - number of failed health checks per upstream.

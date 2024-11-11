@@ -517,8 +517,8 @@ github.com/jstemmer/go-junit-report v0.0.0-20190106144839-af01ea7f8024/go.mod h1
 github.com/jstemmer/go-junit-report v0.9.1/go.mod h1:Brl9GWCQeLvo8nXZwPNNblvFj/XSXhF0NWZEnDohbsk=
 github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7VTCxuUUipMqKk8s4w=
 github.com/julienschmidt/httprouter v1.3.0/go.mod h1:JR6WtHb+2LUe8TCKY3cZOxFyyO8IZAc4RVcycCCAKdM=
-github.com/khchiang1121/coredns v1.10.7 h1:/8IZJK8TjVCJ/strqQOSAhMLiuFEryRoUtK0T9dT5l8=
-github.com/khchiang1121/coredns v1.10.7/go.mod h1:GAspRmZSZ3fXb72wpHVdezCP0zA87q9Da9FpR/nE+KI=
+github.com/khchiang1121/coredns v1.10.8 h1:/zAe6bnKTmjJ68Ssj61aGhapovX5pciWhu6whJJbeGk=
+github.com/khchiang1121/coredns v1.10.8/go.mod h1:GVosHIe4uV4B3Cl3KsbQoqoBt5pY92IVUVKI3sTLrR4=
 github.com/kisielk/errcheck v1.5.0/go.mod h1:pFxgyoBC7bSaBwPgfKdkLd5X25qrDl4LWUI2bnpBCr8=
 github.com/kisielk/gotool v1.0.0/go.mod h1:XhKaO+MFFWcvkIS/tQcRk01m1F5IRFswLeQ+oQHNcck=
 github.com/klauspost/compress v1.12.2/go.mod h1:8dP1Hq4DHOhN9w426knH3Rhby4rFm6D8eO+e+Dq5Gzg=
